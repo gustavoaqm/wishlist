@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lista de Desejos 💝 Madu &amp; Gugs</title>
+    <title>Lista de Desejos | Madu &amp; Gugs</title>
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💝</text></svg>"
@@ -342,10 +342,11 @@
         document.getElementById("edit-links").value = item.links || "";
         document.getElementById("edit-price-preview").textContent = "";
         const btn = document.getElementById("save-edit-btn");
-        btn.style.background =
-          currentTab === "madu"
-            ? "linear-gradient(135deg,#e8a0a0,#c97070)"
-            : "linear-gradient(135deg,#7aa8c7,#4a7da0)";
+        if (btn)
+          btn.style.background =
+            currentTab === "madu"
+              ? "linear-gradient(135deg,#e8a0a0,#c97070)"
+              : "linear-gradient(135deg,#7aa8c7,#4a7da0)";
         const modal = document.getElementById("edit-modal");
         modal.classList.remove("hidden");
         setTimeout(
@@ -355,13 +356,11 @@
         document.getElementById("edit-name").focus();
       };
 
-      window.saveEdit = function () {
+      // Autosave: persists current modal fields without closing
+      function persistEdit() {
         if (!editingId) return;
         const name = document.getElementById("edit-name").value.trim();
-        if (!name) {
-          document.getElementById("edit-name").focus();
-          return;
-        }
+        if (!name) return; // silently skip if name empty
         update(ref(db, `wishlist/${currentTab}/${editingId}`), {
           name,
           price: normalizePrice(document.getElementById("edit-price").value),
@@ -369,8 +368,26 @@
           desc: document.getElementById("edit-desc").value.trim(),
           links: document.getElementById("edit-links").value.trim(),
         });
-        closeModal();
         showPulse();
+        // Show autosave badge briefly
+        const badge = document.getElementById("autosave-badge");
+        if (badge) {
+          badge.classList.add("show");
+          setTimeout(() => badge.classList.remove("show"), 1800);
+        }
+      }
+
+      // Debounced autosave while typing
+      let autosaveTimer = null;
+      window.scheduleAutosave = function () {
+        clearTimeout(autosaveTimer);
+        autosaveTimer = setTimeout(persistEdit, 900);
+      };
+
+      window.saveEdit = function () {
+        clearTimeout(autosaveTimer);
+        persistEdit();
+        closeModal();
       };
 
       window.deleteFromModal = function () {
@@ -378,6 +395,11 @@
       };
 
       window.closeModal = function () {
+        // Autosave on close (covers ✕ button, backdrop tap, swipe-down)
+        clearTimeout(autosaveTimer);
+        persistEdit();
+        // Dismiss keyboard on mobile
+        document.activeElement && document.activeElement.blur();
         const modal = document.getElementById("edit-modal");
         modal.querySelector(".modal-box").classList.remove("in");
         setTimeout(() => modal.classList.add("hidden"), 220);
@@ -501,18 +523,63 @@
       }
 
       window.addEventListener("DOMContentLoaded", render);
+
+      // Close modal on backdrop click (also dismisses keyboard)
       window.addEventListener("click", (e) => {
         if (e.target.id === "edit-modal") closeModal();
       });
+
+      // Dismiss keyboard when tapping outside any input (but not on inputs themselves)
+      document.addEventListener(
+        "touchstart",
+        (e) => {
+          const tag = e.target.tagName;
+          const isInput =
+            tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON";
+          if (
+            !isInput &&
+            document.activeElement &&
+            (document.activeElement.tagName === "INPUT" ||
+              document.activeElement.tagName === "TEXTAREA")
+          ) {
+            document.activeElement.blur();
+          }
+        },
+        { passive: true },
+      );
+
+      // Keyboard shortcuts
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeModal();
         if (
           e.key === "Enter" &&
           !document.getElementById("edit-modal").classList.contains("hidden") &&
           document.activeElement.tagName !== "TEXTAREA"
-        )
+        ) {
           saveEdit();
+        }
       });
+
+      // Swipe down to close modal on mobile
+      let touchStartY = 0;
+      document.addEventListener(
+        "touchstart",
+        (e) => {
+          const box = document.querySelector(".modal-box");
+          if (box && box.contains(e.target)) touchStartY = e.touches[0].clientY;
+        },
+        { passive: true },
+      );
+      document.addEventListener(
+        "touchend",
+        (e) => {
+          const box = document.querySelector(".modal-box");
+          if (!box || !box.classList.contains("in")) return;
+          const delta = e.changedTouches[0].clientY - touchStartY;
+          if (delta > 80) closeModal(); // swipe down 80px closes
+        },
+        { passive: true },
+      );
     </script>
 
     <style>
@@ -749,12 +816,13 @@
         border: 1.5px solid var(--border);
         border-radius: 10px;
         font-family: "DM Sans", sans-serif;
-        font-size: 14px;
+        font-size: 16px;
         background: var(--bg);
         color: var(--text);
         outline: none;
         transition: border 0.2s;
         resize: vertical;
+        -webkit-text-size-adjust: 100%;
       }
       .add-input:focus {
         border-color: var(--rose-dark);
@@ -1005,24 +1073,40 @@
         border-radius: 20px 20px 0 0;
         width: 100%;
         max-width: 520px;
-        padding: 24px 20px 32px;
+        padding: 8px 20px 36px;
         transform: translateY(40px);
         opacity: 0;
         transition:
           transform 0.22s ease,
           opacity 0.22s ease;
-        max-height: 90vh;
+        max-height: 92vh;
         overflow-y: auto;
       }
       @media (min-width: 500px) {
         .modal-box {
           border-radius: 20px;
+          padding-top: 24px;
         }
       }
       .modal-box.in {
         transform: translateY(0);
         opacity: 1;
       }
+
+      /* drag handle (mobile only) */
+      .drag-handle {
+        width: 36px;
+        height: 4px;
+        background: var(--border);
+        border-radius: 4px;
+        margin: 8px auto 16px;
+      }
+      @media (min-width: 500px) {
+        .drag-handle {
+          display: none;
+        }
+      }
+
       .modal-header {
         display: flex;
         align-items: center;
@@ -1062,12 +1146,13 @@
         border: 1.5px solid var(--border);
         border-radius: 10px;
         font-family: "DM Sans", sans-serif;
-        font-size: 14px;
+        font-size: 16px;
         background: var(--bg);
         color: var(--text);
         outline: none;
         transition: border 0.2s;
         resize: vertical;
+        -webkit-text-size-adjust: 100%;
       }
       .modal-input:focus {
         border-color: var(--rose-dark);
@@ -1079,14 +1164,30 @@
         min-height: 14px;
         font-style: italic;
       }
+
+      /* autosave indicator */
+      .autosave-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: #6dba8a;
+        opacity: 0;
+        transition: opacity 0.3s;
+        margin-left: 8px;
+      }
+      .autosave-badge.show {
+        opacity: 1;
+      }
+
       .modal-actions {
         display: flex;
         gap: 8px;
         margin-top: 18px;
       }
-      .save-btn {
+      .close-btn {
         flex: 1;
-        padding: 12px;
+        padding: 14px;
         border: none;
         border-radius: 12px;
         font-family: "DM Sans", sans-serif;
@@ -1098,11 +1199,11 @@
           opacity 0.2s,
           transform 0.15s;
       }
-      .save-btn:active {
+      .close-btn:active {
         transform: scale(0.97);
       }
       .del-modal-btn {
-        padding: 12px 16px;
+        padding: 14px 16px;
         border: 1.5px solid #fae8e8;
         border-radius: 12px;
         background: white;
@@ -1238,8 +1339,14 @@
     <!-- EDIT MODAL -->
     <div class="modal-overlay hidden" id="edit-modal">
       <div class="modal-box">
+        <div class="drag-handle"></div>
         <div class="modal-header">
-          <span class="modal-title">Editar desejo ✏️</span>
+          <span class="modal-title"
+            >Editar desejo ✏️
+            <span class="autosave-badge" id="autosave-badge"
+              >✓ salvo</span
+            ></span
+          >
           <button class="modal-close" onclick="closeModal()">✕</button>
         </div>
         <div class="modal-field">
@@ -1248,6 +1355,7 @@
             class="modal-input"
             id="edit-name"
             placeholder="Nome do item"
+            oninput="scheduleAutosave()"
           />
         </div>
         <div class="modal-field">
@@ -1256,7 +1364,10 @@
             class="modal-input"
             id="edit-price"
             placeholder="Ex: 200 ou 100~400"
-            oninput="previewPrice('edit-price', 'edit-price-preview')"
+            oninput="
+              previewPrice('edit-price', 'edit-price-preview');
+              scheduleAutosave();
+            "
           />
           <div class="modal-price-preview" id="edit-price-preview"></div>
         </div>
@@ -1266,6 +1377,7 @@
             class="modal-input"
             id="edit-note"
             placeholder="Ex: escolha própria, tamanho M..."
+            oninput="scheduleAutosave()"
           />
         </div>
         <div class="modal-field">
@@ -1275,6 +1387,7 @@
             id="edit-desc"
             rows="3"
             placeholder="Detalhes, modelo, cor, tamanho..."
+            oninput="scheduleAutosave()"
           ></textarea>
         </div>
         <div class="modal-field">
@@ -1284,14 +1397,15 @@
             id="edit-links"
             rows="2"
             placeholder="Cole links separados por vírgula ou por linha"
+            oninput="scheduleAutosave()"
           ></textarea>
         </div>
         <div class="modal-actions">
           <button class="del-modal-btn" onclick="deleteFromModal()">
             🗑 Remover
           </button>
-          <button class="save-btn" id="save-edit-btn" onclick="saveEdit()">
-            Salvar alterações
+          <button class="close-btn" id="save-edit-btn" onclick="saveEdit()">
+            Concluir
           </button>
         </div>
       </div>
