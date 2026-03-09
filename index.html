@@ -3,13 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lista de Desejos 💝 Madu & Gugs</title>
+    <title>Lista de Desejos 💝 Madu &amp; Gugs</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💝</text></svg>"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Firebase SDK -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
       import {
@@ -21,10 +24,7 @@
         update,
       } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-      // ─────────────────────────────────────────────
       // 🔥 COLE AQUI SUA CONFIG DO FIREBASE
-      // (veja o README.md para instruções)
-      // ─────────────────────────────────────────────
       const firebaseConfig = {
         apiKey: "AIzaSyAKQhlB2Cm1rjPxHXZv3Hc9jBN3bTL0MTk",
         authDomain: "lista-de-desejos-gu-e-madu.firebaseapp.com",
@@ -39,106 +39,237 @@
       const app = initializeApp(firebaseConfig);
       const db = getDatabase(app);
 
-      // ─── Estado local ───
       let currentTab = "madu";
       let currentFilter = "all";
       let data = { madu: [], gugs: [] };
       let initialized = { madu: false, gugs: false };
 
-      // Dados iniciais (só usados na primeira vez, se o Firebase estiver vazio)
       const INITIAL_DATA = {
         madu: [
           {
             name: "Anel solitário prata 950",
-            price: "R$ 100~300",
+            price: "100~300",
             note: "Escolha própria",
+            desc: "",
+            links: "",
           },
           {
             name: "Kit colar e brinco de prata",
-            price: "R$ 150~200",
+            price: "150~200",
             note: "Escolha própria",
+            desc: "",
+            links: "",
           },
-          { name: "Tênis Branco Nike", price: "R$ 350", note: "" },
-          { name: "Câmera Wi-Fi", price: "R$ 200", note: "" },
+          {
+            name: "Tênis Branco Nike",
+            price: "350",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          { name: "Câmera Wi-Fi", price: "200", note: "", desc: "", links: "" },
           {
             name: "Jaqueta Puffer Branca/OffWhite",
-            price: "R$ 200",
+            price: "200",
             note: "Estilo consultado",
+            desc: "",
+            links: "",
           },
-          { name: "Bota cano alto", price: "R$ 300", note: "" },
-          { name: "Vibrador", price: "R$ 100~400", note: "Várias opções" },
-          { name: "Algema", price: "R$ 50", note: "" },
-          { name: "Lingerie", price: "R$ 100", note: "😏" },
-          { name: "Meias Lupo", price: "R$ 40", note: "" },
+          {
+            name: "Bota cano alto",
+            price: "300",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Vibrador",
+            price: "100~400",
+            note: "Várias opções",
+            desc: "",
+            links: "",
+          },
+          { name: "Algema", price: "50", note: "", desc: "", links: "" },
+          { name: "Lingerie", price: "100", note: "😏", desc: "", links: "" },
+          { name: "Meias Lupo", price: "40", note: "", desc: "", links: "" },
           {
             name: "Chinelo adidas/nike",
-            price: "R$ 150~200",
+            price: "150~200",
             note: "Nike Preto, Nike Branco ou Adidas Rosa",
+            desc: "",
+            links: "",
           },
           {
             name: "Roupas YouCom (Blusa, Vestido, Shorts, Calças)",
-            price: "Variável",
-            note: "",
+            price: "",
+            note: "Variável",
+            desc: "",
+            links: "",
           },
-          { name: "Camiseta adidas/nike", price: "Variável", note: "" },
-          { name: "Shorts Esportivo Nike", price: "R$ 240", note: "" },
+          {
+            name: "Camiseta adidas/nike",
+            price: "",
+            note: "Variável",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Shorts Esportivo Nike",
+            price: "240",
+            note: "",
+            desc: "",
+            links: "",
+          },
           {
             name: "iPad / Tablet Samsung",
-            price: "R$ 2.800",
+            price: "2800",
             note: "Samsung ou iPad",
+            desc: "",
+            links: "",
           },
-          { name: "Teclado e caneta Tablet", price: "", note: "Se for iPad" },
-          { name: "Macbook Fino", price: "R$ 7.500", note: "" },
+          {
+            name: "Teclado e caneta Tablet",
+            price: "",
+            note: "Se for iPad",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Macbook Fino",
+            price: "7500",
+            note: "",
+            desc: "",
+            links: "",
+          },
           {
             name: "Fone Original Apple (ou outro bom)",
-            price: "R$ 1.500",
+            price: "1500",
             note: "",
+            desc: "",
+            links: "",
           },
         ],
         gugs: [
-          { name: "Armário", price: "", note: "" },
-          { name: "Perfume Armani", price: "", note: "" },
-          { name: "Colônia", price: "", note: "" },
-          { name: "Calça moletom Nike/adidas", price: "", note: "" },
-          { name: "Nerf", price: "", note: "" },
-          { name: "Pista Hot Wheels", price: "", note: "" },
-          { name: "Skate de Dedo", price: "", note: "" },
-          { name: "Beyblade", price: "", note: "" },
-          { name: "Tablet para estudo", price: "", note: "" },
-          { name: "Bermuda moletom Nike/adidas", price: "", note: "" },
-          { name: "PS5 (GTA6)", price: "", note: "" },
-          { name: "iPhone 16e", price: "", note: "" },
-          { name: "Escapamento JK", price: "", note: "" },
-          { name: "Insulfilm na Frente", price: "", note: "" },
-          { name: "Polimento do Carro", price: "", note: "" },
-          { name: "Limpeza Profunda Carro", price: "", note: "" },
-          { name: "Óculos de VR PC", price: "", note: "" },
-          { name: "Led nos faróis", price: "", note: "" },
-          { name: "Câmeras WiFi", price: "", note: "" },
-          { name: "Ar condicionado", price: "", note: "" },
-          { name: "Camiseta de botão", price: "", note: "" },
-          { name: "Suéter de Tiozinho", price: "", note: "😂" },
-          { name: "Camiseta Furia Original", price: "", note: "" },
-          { name: "Juliet", price: "", note: "" },
-          { name: "Óculos de Sol", price: "", note: "" },
-          { name: "Lego", price: "", note: "" },
-          { name: "Fone Bluetooth", price: "", note: "" },
+          { name: "Armário", price: "", note: "", desc: "", links: "" },
+          { name: "Perfume Armani", price: "", note: "", desc: "", links: "" },
+          { name: "Colônia", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Calça moletom Nike/adidas",
+            price: "",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          { name: "Nerf", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Pista Hot Wheels",
+            price: "",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          { name: "Skate de Dedo", price: "", note: "", desc: "", links: "" },
+          { name: "Beyblade", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Tablet para estudo",
+            price: "",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Bermuda moletom Nike/adidas",
+            price: "",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          { name: "PS5 (GTA6)", price: "", note: "", desc: "", links: "" },
+          { name: "iPhone 16e", price: "", note: "", desc: "", links: "" },
+          { name: "Escapamento JK", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Insulfilm na Frente",
+            price: "",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Polimento do Carro",
+            price: "",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Limpeza Profunda Carro",
+            price: "",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          { name: "Óculos de VR PC", price: "", note: "", desc: "", links: "" },
+          { name: "Led nos faróis", price: "", note: "", desc: "", links: "" },
+          { name: "Câmeras WiFi", price: "", note: "", desc: "", links: "" },
+          { name: "Ar condicionado", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Camiseta de botão",
+            price: "",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Suéter de Tiozinho",
+            price: "",
+            note: "😂",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Camiseta Furia Original",
+            price: "",
+            note: "",
+            desc: "",
+            links: "",
+          },
+          { name: "Juliet", price: "", note: "", desc: "", links: "" },
+          { name: "Óculos de Sol", price: "", note: "", desc: "", links: "" },
+          { name: "Lego", price: "", note: "", desc: "", links: "" },
+          { name: "Fone Bluetooth", price: "", note: "", desc: "", links: "" },
         ],
       };
 
-      // ─── Firebase listeners ───
+      // Formata preço: "100~300" → "R$ 100 ~ R$ 300", "350" → "R$ 350"
+      function formatPrice(raw) {
+        if (!raw || raw.trim() === "") return "";
+        const val = raw.trim();
+        const rangeMatch = val.match(/^([\d.,]+)\s*[~\-]\s*([\d.,]+)$/);
+        if (rangeMatch) return `R$ ${rangeMatch[1]} ~ R$ ${rangeMatch[2]}`;
+        if (/^[\d.,]+$/.test(val)) return `R$ ${val}`;
+        if (val.toLowerCase().startsWith("r$")) return val;
+        return val;
+      }
+
+      function normalizePrice(raw) {
+        if (!raw) return "";
+        return raw
+          .trim()
+          .replace(/^R\$\s*/i, "")
+          .trim();
+      }
+
+      // Firebase
       function listenTab(tab) {
-        const dbRef = ref(db, `wishlist/${tab}`);
-        onValue(dbRef, (snapshot) => {
+        onValue(ref(db, `wishlist/${tab}`), (snapshot) => {
           const val = snapshot.val();
           if (val === null && !initialized[tab]) {
-            // Primeira vez: popula com dados iniciais
             const initial = {};
             INITIAL_DATA[tab].forEach((item, i) => {
               initial[`item_${Date.now()}_${i}`] = {
                 ...item,
                 done: false,
-                createdAt: Date.now(),
+                createdAt: Date.now() + i,
               };
             });
             set(ref(db, `wishlist/${tab}`), initial);
@@ -157,7 +288,6 @@
       listenTab("madu");
       listenTab("gugs");
 
-      // ─── Actions ───
       window.toggleItem = function (id) {
         const item = data[currentTab].find((i) => i.id === id);
         if (!item) return;
@@ -170,28 +300,88 @@
         if (!item) return;
         if (!confirm(`Remover "${item.name}"?`)) return;
         remove(ref(db, `wishlist/${currentTab}/${id}`));
+        closeModal();
       };
 
       window.addItem = function () {
-        const nameInput = document.getElementById("new-name");
-        const priceInput = document.getElementById("new-price");
-        const name = nameInput.value.trim();
+        const nameEl = document.getElementById("new-name");
+        const name = nameEl.value.trim();
         if (!name) {
-          nameInput.focus();
+          nameEl.focus();
           return;
         }
         const id = `item_${Date.now()}`;
         set(ref(db, `wishlist/${currentTab}/${id}`), {
           name,
-          price: priceInput.value.trim(),
+          price: normalizePrice(document.getElementById("new-price").value),
           note: "",
+          desc: document.getElementById("new-desc").value.trim(),
+          links: document.getElementById("new-links").value.trim(),
           done: false,
           createdAt: Date.now(),
         });
-        nameInput.value = "";
-        priceInput.value = "";
-        nameInput.focus();
+        ["new-name", "new-price", "new-desc", "new-links"].forEach(
+          (id) => (document.getElementById(id).value = ""),
+        );
+        document.getElementById("add-price-preview").textContent = "";
+        nameEl.focus();
         document.getElementById("add-panel").classList.add("hidden");
+      };
+
+      // Edit modal
+      let editingId = null;
+
+      window.openEdit = function (id) {
+        const item = data[currentTab].find((i) => i.id === id);
+        if (!item) return;
+        editingId = id;
+        document.getElementById("edit-name").value = item.name || "";
+        document.getElementById("edit-price").value = item.price || "";
+        document.getElementById("edit-note").value = item.note || "";
+        document.getElementById("edit-desc").value = item.desc || "";
+        document.getElementById("edit-links").value = item.links || "";
+        document.getElementById("edit-price-preview").textContent = "";
+        const btn = document.getElementById("save-edit-btn");
+        btn.style.background =
+          currentTab === "madu"
+            ? "linear-gradient(135deg,#e8a0a0,#c97070)"
+            : "linear-gradient(135deg,#7aa8c7,#4a7da0)";
+        const modal = document.getElementById("edit-modal");
+        modal.classList.remove("hidden");
+        setTimeout(
+          () => modal.querySelector(".modal-box").classList.add("in"),
+          10,
+        );
+        document.getElementById("edit-name").focus();
+      };
+
+      window.saveEdit = function () {
+        if (!editingId) return;
+        const name = document.getElementById("edit-name").value.trim();
+        if (!name) {
+          document.getElementById("edit-name").focus();
+          return;
+        }
+        update(ref(db, `wishlist/${currentTab}/${editingId}`), {
+          name,
+          price: normalizePrice(document.getElementById("edit-price").value),
+          note: document.getElementById("edit-note").value.trim(),
+          desc: document.getElementById("edit-desc").value.trim(),
+          links: document.getElementById("edit-links").value.trim(),
+        });
+        closeModal();
+        showPulse();
+      };
+
+      window.deleteFromModal = function () {
+        if (editingId) deleteItem(editingId);
+      };
+
+      window.closeModal = function () {
+        const modal = document.getElementById("edit-modal");
+        modal.querySelector(".modal-box").classList.remove("in");
+        setTimeout(() => modal.classList.add("hidden"), 220);
+        editingId = null;
       };
 
       window.switchTab = function (tab) {
@@ -209,8 +399,7 @@
       window.setFilter = function (f, doRender = true) {
         currentFilter = f;
         ["all", "pending", "done"].forEach((x) => {
-          const b = document.getElementById("f-" + x);
-          b.className =
+          document.getElementById("f-" + x).className =
             "filter-btn filter-" + currentTab + (x === f ? " active" : "");
         });
         if (doRender) render();
@@ -219,22 +408,31 @@
       window.toggleAddPanel = function () {
         const p = document.getElementById("add-panel");
         p.classList.toggle("hidden");
-        if (!p.classList.contains("hidden"))
+        if (!p.classList.contains("hidden")) {
+          document.getElementById("add-confirm").className =
+            "add-confirm" + (currentTab === "gugs" ? " gugs-btn" : "");
           document.getElementById("new-name").focus();
+        }
+      };
+
+      window.previewPrice = function (inputId, previewId) {
+        const val = document.getElementById(inputId).value;
+        const formatted = formatPrice(normalizePrice(val));
+        document.getElementById(previewId).textContent = formatted
+          ? `→ ${formatted}`
+          : "";
       };
 
       function showPulse() {
-        const sync = document.getElementById("sync-dot");
-        sync.classList.add("pulse");
-        setTimeout(() => sync.classList.remove("pulse"), 800);
+        const dot = document.getElementById("sync-dot");
+        dot.classList.add("pulse");
+        setTimeout(() => dot.classList.remove("pulse"), 800);
       }
 
-      // ─── Render ───
       function render() {
         const items = data[currentTab] || [];
         const total = items.length;
         const done = items.filter((i) => i.done).length;
-
         document.getElementById("stat-done").textContent = done;
         document.getElementById("stat-total").textContent = total;
         const pct = total ? Math.round((done / total) * 100) : 0;
@@ -242,14 +440,14 @@
         document.getElementById("progress-fill").className =
           "progress-fill fill-" + currentTab;
         document.getElementById("pct-label").textContent = pct + "%";
+        document.getElementById("fab").className = "fab fab-" + currentTab;
 
-        const addBtn = document.getElementById("fab");
-        addBtn.className = "fab fab-" + currentTab;
-
-        let filtered = items;
-        if (currentFilter === "pending")
-          filtered = items.filter((i) => !i.done);
-        if (currentFilter === "done") filtered = items.filter((i) => i.done);
+        let filtered =
+          currentFilter === "pending"
+            ? items.filter((i) => !i.done)
+            : currentFilter === "done"
+              ? items.filter((i) => i.done)
+              : items;
 
         const list = document.getElementById("wish-list");
         const emptyEl = document.getElementById("empty-state");
@@ -264,32 +462,57 @@
         list.innerHTML = filtered
           .map((item) => {
             const checkClass = item.done ? `checked-${currentTab}` : "";
-            const itemClass = item.done ? "wish-item done" : "wish-item";
-            const priceTag = item.price
-              ? `<span class="item-price price-${currentTab}">${item.price}</span>`
+            const priceFormatted = formatPrice(item.price || "");
+            const priceTag = priceFormatted
+              ? `<span class="item-price price-${currentTab}">${priceFormatted}</span>`
               : "";
             const noteTag = item.note
-              ? `<div class="item-note">${item.note}</div>`
+              ? `<span class="item-note">${item.note}</span>`
               : "";
-            return `
-        <li class="${itemClass}" id="li-${item.id}">
-          <div class="wish-check ${checkClass}" onclick="toggleItem('${item.id}')">
-            <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-              <path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="item-body">
-            <div class="item-name">${item.name}</div>
-            <div class="item-meta">${priceTag}${noteTag}</div>
-          </div>
-          <button class="del-btn" onclick="deleteItem('${item.id}')">✕</button>
-        </li>`;
+            const descTag = item.desc
+              ? `<div class="item-desc">${item.desc}</div>`
+              : "";
+            let linksHtml = "";
+            if (item.links) {
+              const linkList = item.links
+                .split(/[\n,]+/)
+                .map((l) => l.trim())
+                .filter(Boolean);
+              linksHtml = `<div class="item-links">${linkList
+                .map((l, i) => {
+                  const href = l.startsWith("http") ? l : "https://" + l;
+                  return `<a href="${href}" target="_blank" rel="noopener" class="item-link link-${currentTab}">🔗 Link${linkList.length > 1 ? " " + (i + 1) : ""}</a>`;
+                })
+                .join("")}</div>`;
+            }
+            return `<li class="wish-item${item.done ? " done" : ""}" id="li-${item.id}">
+        <div class="wish-check ${checkClass}" onclick="toggleItem('${item.id}')">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="item-body" onclick="openEdit('${item.id}')">
+          <div class="item-name">${item.name}</div>
+          <div class="item-meta">${priceTag}${noteTag}</div>
+          ${descTag}${linksHtml}
+        </div>
+        <button class="edit-btn" onclick="openEdit('${item.id}')" title="Editar">✏️</button>
+      </li>`;
           })
           .join("");
       }
 
-      // Initial render
-      window.addEventListener("DOMContentLoaded", () => render());
+      window.addEventListener("DOMContentLoaded", render);
+      window.addEventListener("click", (e) => {
+        if (e.target.id === "edit-modal") closeModal();
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+        if (
+          e.key === "Enter" &&
+          !document.getElementById("edit-modal").classList.contains("hidden") &&
+          document.activeElement.tagName !== "TEXTAREA"
+        )
+          saveEdit();
+      });
     </script>
 
     <style>
@@ -309,7 +532,6 @@
         margin: 0;
         padding: 0;
       }
-
       body {
         font-family: "DM Sans", sans-serif;
         background: var(--bg);
@@ -326,13 +548,6 @@
         border-bottom: 1px solid var(--border);
         position: relative;
       }
-      .hero-top {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        margin-bottom: 4px;
-      }
       .sync-indicator {
         display: flex;
         align-items: center;
@@ -348,16 +563,15 @@
         height: 7px;
         border-radius: 50%;
         background: #6dba8a;
-        transition: transform 0.2s;
       }
       #sync-dot.pulse {
         transform: scale(1.8);
         background: #4da86a;
+        transition: transform 0.2s;
       }
       .hero h1 {
         font-family: "Playfair Display", serif;
         font-size: clamp(26px, 7vw, 40px);
-        color: var(--text);
       }
       .hero h1 span {
         color: var(--rose-dark);
@@ -514,10 +728,10 @@
         }
       }
       .add-panel h3 {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 500;
         color: var(--muted);
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         text-transform: uppercase;
         letter-spacing: 0.8px;
       }
@@ -540,12 +754,20 @@
         color: var(--text);
         outline: none;
         transition: border 0.2s;
+        resize: vertical;
       }
       .add-input:focus {
         border-color: var(--rose-dark);
       }
+      .price-preview {
+        font-size: 11px;
+        color: var(--muted);
+        margin: -4px 0 6px 2px;
+        min-height: 16px;
+        font-style: italic;
+      }
       .add-confirm {
-        padding: 10px 20px;
+        padding: 10px 18px;
         border: none;
         border-radius: 10px;
         font-family: "DM Sans", sans-serif;
@@ -554,9 +776,8 @@
         cursor: pointer;
         background: linear-gradient(135deg, var(--rose), var(--rose-dark));
         color: white;
-        transition:
-          opacity 0.2s,
-          transform 0.15s;
+        transition: transform 0.15s;
+        white-space: nowrap;
       }
       .add-confirm.gugs-btn {
         background: linear-gradient(135deg, var(--blue), var(--blue-dark));
@@ -613,7 +834,7 @@
         border: 2px solid var(--border);
         cursor: pointer;
         flex-shrink: 0;
-        margin-top: 1px;
+        margin-top: 2px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -640,6 +861,7 @@
       .item-body {
         flex: 1;
         min-width: 0;
+        cursor: pointer;
       }
       .item-name {
         font-size: 14px;
@@ -650,9 +872,9 @@
         flex-wrap: wrap;
         gap: 5px;
         margin-top: 4px;
+        align-items: center;
       }
       .item-price {
-        display: inline-block;
         font-size: 12px;
         font-weight: 500;
         padding: 2px 8px;
@@ -670,25 +892,52 @@
         font-size: 12px;
         color: var(--muted);
         font-style: italic;
-        padding-top: 1px;
+      }
+      .item-desc {
+        font-size: 12px;
+        color: #6a5c5c;
+        margin-top: 5px;
+        line-height: 1.5;
+      }
+      .item-links {
+        margin-top: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .item-link {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        text-decoration: none;
+      }
+      .item-link:hover {
+        opacity: 0.75;
+      }
+      .link-madu {
+        background: #fae8e8;
+        color: var(--rose-dark);
+      }
+      .link-gugs {
+        background: #e4eef5;
+        color: var(--blue-dark);
       }
 
-      .del-btn {
+      .edit-btn {
         background: none;
         border: none;
-        font-size: 14px;
+        font-size: 15px;
         cursor: pointer;
-        color: #ddd;
+        color: #ccc;
         padding: 3px 6px;
         border-radius: 6px;
-        transition:
-          color 0.2s,
-          background 0.2s;
+        transition: opacity 0.2s;
         flex-shrink: 0;
+        opacity: 0;
       }
-      .del-btn:hover {
-        color: var(--rose-dark);
-        background: #fae8e8;
+      .wish-item:hover .edit-btn {
+        opacity: 1;
       }
 
       /* FAB */
@@ -703,9 +952,7 @@
         font-size: 26px;
         cursor: pointer;
         box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
-        transition:
-          transform 0.15s,
-          box-shadow 0.15s;
+        transition: transform 0.15s;
         z-index: 100;
         display: flex;
         align-items: center;
@@ -736,6 +983,138 @@
         margin-bottom: 10px;
       }
 
+      /* MODAL */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(30, 10, 10, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 200;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+      }
+      @media (min-width: 500px) {
+        .modal-overlay {
+          align-items: center;
+          padding: 20px;
+        }
+      }
+      .modal-box {
+        background: var(--card);
+        border-radius: 20px 20px 0 0;
+        width: 100%;
+        max-width: 520px;
+        padding: 24px 20px 32px;
+        transform: translateY(40px);
+        opacity: 0;
+        transition:
+          transform 0.22s ease,
+          opacity 0.22s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      @media (min-width: 500px) {
+        .modal-box {
+          border-radius: 20px;
+        }
+      }
+      .modal-box.in {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .modal-title {
+        font-family: "Playfair Display", serif;
+        font-size: 18px;
+      }
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: var(--muted);
+        padding: 4px 8px;
+        border-radius: 8px;
+      }
+      .modal-close:hover {
+        background: var(--border);
+      }
+      .modal-field {
+        margin-bottom: 12px;
+      }
+      .modal-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        margin-bottom: 5px;
+      }
+      .modal-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        background: var(--bg);
+        color: var(--text);
+        outline: none;
+        transition: border 0.2s;
+        resize: vertical;
+      }
+      .modal-input:focus {
+        border-color: var(--rose-dark);
+      }
+      .modal-price-preview {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 3px;
+        min-height: 14px;
+        font-style: italic;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      .save-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 12px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        color: white;
+        transition:
+          opacity 0.2s,
+          transform 0.15s;
+      }
+      .save-btn:active {
+        transform: scale(0.97);
+      }
+      .del-modal-btn {
+        padding: 12px 16px;
+        border: 1.5px solid #fae8e8;
+        border-radius: 12px;
+        background: white;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        cursor: pointer;
+        color: var(--rose-dark);
+      }
+      .del-modal-btn:hover {
+        background: #fae8e8;
+      }
+
       .hidden {
         display: none !important;
       }
@@ -748,7 +1127,7 @@
         ao vivo
       </div>
       <h1>Lista de <span>Desejos</span> ♡</h1>
-      <p>Madu & Gugs · 2026</p>
+      <p>Madu &amp; Gugs · 2026</p>
       <div class="tabs">
         <button
           class="tab-btn active-madu"
@@ -808,20 +1187,40 @@
       </div>
 
       <div class="add-panel hidden" id="add-panel">
-        <h3>Novo desejo</h3>
+        <h3>✨ Novo desejo</h3>
         <div class="add-row">
           <input
             class="add-input"
             id="new-name"
-            placeholder="Nome do item..."
-            onkeydown="if (event.key === 'Enter') addItem();"
+            placeholder="Nome do item *"
+            onkeydown="
+              if (event.key === 'Enter')
+                document.getElementById('new-price').focus();
+            "
           />
         </div>
         <div class="add-row">
           <input
             class="add-input"
             id="new-price"
-            placeholder="Valor (ex: R$ 200) — opcional"
+            placeholder="Preço — ex: 200 ou 100~400 (opcional)"
+            oninput="previewPrice('new-price', 'add-price-preview')"
+          />
+        </div>
+        <div class="price-preview" id="add-price-preview"></div>
+        <div class="add-row">
+          <textarea
+            class="add-input"
+            id="new-desc"
+            rows="2"
+            placeholder="Descrição — cor, tamanho, modelo... (opcional)"
+          ></textarea>
+        </div>
+        <div class="add-row">
+          <input
+            class="add-input"
+            id="new-links"
+            placeholder="Links de referência — separados por vírgula (opcional)"
             onkeydown="if (event.key === 'Enter') addItem();"
           />
           <button class="add-confirm" id="add-confirm" onclick="addItem()">
@@ -832,8 +1231,69 @@
 
       <ul class="wish-list" id="wish-list"></ul>
       <div class="empty hidden" id="empty-state">
-        <span class="emoji">🌟</span>
-        Nenhum item aqui!
+        <span class="emoji">🌟</span>Nenhum item aqui!
+      </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div class="modal-overlay hidden" id="edit-modal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <span class="modal-title">Editar desejo ✏️</span>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">Nome *</div>
+          <input
+            class="modal-input"
+            id="edit-name"
+            placeholder="Nome do item"
+          />
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">Preço</div>
+          <input
+            class="modal-input"
+            id="edit-price"
+            placeholder="Ex: 200 ou 100~400"
+            oninput="previewPrice('edit-price', 'edit-price-preview')"
+          />
+          <div class="modal-price-preview" id="edit-price-preview"></div>
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">Observação rápida</div>
+          <input
+            class="modal-input"
+            id="edit-note"
+            placeholder="Ex: escolha própria, tamanho M..."
+          />
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">Descrição</div>
+          <textarea
+            class="modal-input"
+            id="edit-desc"
+            rows="3"
+            placeholder="Detalhes, modelo, cor, tamanho..."
+          ></textarea>
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">Links de referência</div>
+          <textarea
+            class="modal-input"
+            id="edit-links"
+            rows="2"
+            placeholder="Cole links separados por vírgula ou por linha"
+          ></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="del-modal-btn" onclick="deleteFromModal()">
+            🗑 Remover
+          </button>
+          <button class="save-btn" id="save-edit-btn" onclick="saveEdit()">
+            Salvar alterações
+          </button>
+        </div>
       </div>
     </div>
 
