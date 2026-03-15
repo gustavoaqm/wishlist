@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lista de Desejos | Madu &amp; Gugs</title>
+    <title>Lista de Desejos 💝 Madu &amp; Gugs</title>
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💝</text></svg>"
@@ -39,10 +39,17 @@
       const app = initializeApp(firebaseConfig);
       const db = getDatabase(app);
 
-      let currentTab = "madu";
-      let currentFilter = "all";
-      let data = { madu: [], gugs: [] };
-      let initialized = { madu: false, gugs: false };
+      // ── Categorias disponíveis ──
+      const CATEGORIES = [
+        { id: "moda", label: "Moda", emoji: "👗" },
+        { id: "tech", label: "Tech", emoji: "💻" },
+        { id: "casa", label: "Casa", emoji: "🏠" },
+        { id: "beleza", label: "Beleza", emoji: "✨" },
+        { id: "esporte", label: "Esporte", emoji: "🏃" },
+        { id: "lazer", label: "Lazer", emoji: "🎮" },
+        { id: "veiculo", label: "Veículo", emoji: "🚗" },
+        { id: "outro", label: "Outro", emoji: "🎁" },
+      ];
 
       const INITIAL_DATA = {
         madu: [
@@ -50,6 +57,7 @@
             name: "Anel solitário prata 950",
             price: "100~300",
             note: "Escolha própria",
+            category: "moda",
             desc: "",
             links: "",
           },
@@ -57,6 +65,7 @@
             name: "Kit colar e brinco de prata",
             price: "150~200",
             note: "Escolha própria",
+            category: "moda",
             desc: "",
             links: "",
           },
@@ -64,14 +73,23 @@
             name: "Tênis Branco Nike",
             price: "350",
             note: "",
+            category: "moda",
             desc: "",
             links: "",
           },
-          { name: "Câmera Wi-Fi", price: "200", note: "", desc: "", links: "" },
+          {
+            name: "Câmera Wi-Fi",
+            price: "200",
+            note: "",
+            category: "tech",
+            desc: "",
+            links: "",
+          },
           {
             name: "Jaqueta Puffer Branca/OffWhite",
             price: "200",
             note: "Estilo consultado",
+            category: "moda",
             desc: "",
             links: "",
           },
@@ -79,6 +97,7 @@
             name: "Bota cano alto",
             price: "300",
             note: "",
+            category: "moda",
             desc: "",
             links: "",
           },
@@ -86,30 +105,55 @@
             name: "Vibrador",
             price: "100~400",
             note: "Várias opções",
+            category: "outro",
             desc: "",
             links: "",
           },
-          { name: "Algema", price: "50", note: "", desc: "", links: "" },
-          { name: "Lingerie", price: "100", note: "😏", desc: "", links: "" },
-          { name: "Meias Lupo", price: "40", note: "", desc: "", links: "" },
+          {
+            name: "Algema",
+            price: "50",
+            note: "",
+            category: "outro",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Lingerie",
+            price: "100",
+            note: "😏",
+            category: "moda",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Meias Lupo",
+            price: "40",
+            note: "",
+            category: "moda",
+            desc: "",
+            links: "",
+          },
           {
             name: "Chinelo adidas/nike",
             price: "150~200",
-            note: "Nike Preto, Nike Branco ou Adidas Rosa",
+            note: "Nike Preto, Branco ou Adidas Rosa",
+            category: "moda",
             desc: "",
             links: "",
           },
           {
-            name: "Roupas YouCom (Blusa, Vestido, Shorts, Calças)",
+            name: "Roupas YouCom",
             price: "",
             note: "Variável",
-            desc: "",
+            category: "moda",
+            desc: "Blusa, Vestido, Shorts, Calças",
             links: "",
           },
           {
             name: "Camiseta adidas/nike",
             price: "",
             note: "Variável",
+            category: "moda",
             desc: "",
             links: "",
           },
@@ -117,6 +161,7 @@
             name: "Shorts Esportivo Nike",
             price: "240",
             note: "",
+            category: "esporte",
             desc: "",
             links: "",
           },
@@ -124,6 +169,7 @@
             name: "iPad / Tablet Samsung",
             price: "2800",
             note: "Samsung ou iPad",
+            category: "tech",
             desc: "",
             links: "",
           },
@@ -131,6 +177,7 @@
             name: "Teclado e caneta Tablet",
             price: "",
             note: "Se for iPad",
+            category: "tech",
             desc: "",
             links: "",
           },
@@ -138,6 +185,7 @@
             name: "Macbook Fino",
             price: "7500",
             note: "",
+            category: "tech",
             desc: "",
             links: "",
           },
@@ -145,35 +193,81 @@
             name: "Fone Original Apple (ou outro bom)",
             price: "1500",
             note: "",
+            category: "tech",
             desc: "",
             links: "",
           },
         ],
         gugs: [
-          { name: "Armário", price: "", note: "", desc: "", links: "" },
-          { name: "Perfume Armani", price: "", note: "", desc: "", links: "" },
-          { name: "Colônia", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Armário",
+            price: "",
+            note: "",
+            category: "casa",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Perfume Armani",
+            price: "",
+            note: "",
+            category: "beleza",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Colônia",
+            price: "",
+            note: "",
+            category: "beleza",
+            desc: "",
+            links: "",
+          },
           {
             name: "Calça moletom Nike/adidas",
             price: "",
             note: "",
+            category: "moda",
             desc: "",
             links: "",
           },
-          { name: "Nerf", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Nerf",
+            price: "",
+            note: "",
+            category: "lazer",
+            desc: "",
+            links: "",
+          },
           {
             name: "Pista Hot Wheels",
             price: "",
             note: "",
+            category: "lazer",
             desc: "",
             links: "",
           },
-          { name: "Skate de Dedo", price: "", note: "", desc: "", links: "" },
-          { name: "Beyblade", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Skate de Dedo",
+            price: "",
+            note: "",
+            category: "lazer",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Beyblade",
+            price: "",
+            note: "",
+            category: "lazer",
+            desc: "",
+            links: "",
+          },
           {
             name: "Tablet para estudo",
             price: "",
             note: "",
+            category: "tech",
             desc: "",
             links: "",
           },
@@ -181,16 +275,39 @@
             name: "Bermuda moletom Nike/adidas",
             price: "",
             note: "",
+            category: "moda",
             desc: "",
             links: "",
           },
-          { name: "PS5 (GTA6)", price: "", note: "", desc: "", links: "" },
-          { name: "iPhone 16e", price: "", note: "", desc: "", links: "" },
-          { name: "Escapamento JK", price: "", note: "", desc: "", links: "" },
+          {
+            name: "PS5 (GTA6)",
+            price: "",
+            note: "",
+            category: "lazer",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "iPhone 16e",
+            price: "",
+            note: "",
+            category: "tech",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Escapamento JK",
+            price: "",
+            note: "",
+            category: "veiculo",
+            desc: "",
+            links: "",
+          },
           {
             name: "Insulfilm na Frente",
             price: "",
             note: "",
+            category: "veiculo",
             desc: "",
             links: "",
           },
@@ -198,6 +315,7 @@
             name: "Polimento do Carro",
             price: "",
             note: "",
+            category: "veiculo",
             desc: "",
             links: "",
           },
@@ -205,17 +323,47 @@
             name: "Limpeza Profunda Carro",
             price: "",
             note: "",
+            category: "veiculo",
             desc: "",
             links: "",
           },
-          { name: "Óculos de VR PC", price: "", note: "", desc: "", links: "" },
-          { name: "Led nos faróis", price: "", note: "", desc: "", links: "" },
-          { name: "Câmeras WiFi", price: "", note: "", desc: "", links: "" },
-          { name: "Ar condicionado", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Óculos de VR PC",
+            price: "",
+            note: "",
+            category: "tech",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Led nos faróis",
+            price: "",
+            note: "",
+            category: "veiculo",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Câmeras WiFi",
+            price: "",
+            note: "",
+            category: "tech",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Ar condicionado",
+            price: "",
+            note: "",
+            category: "casa",
+            desc: "",
+            links: "",
+          },
           {
             name: "Camiseta de botão",
             price: "",
             note: "",
+            category: "moda",
             desc: "",
             links: "",
           },
@@ -223,6 +371,7 @@
             name: "Suéter de Tiozinho",
             price: "",
             note: "😂",
+            category: "moda",
             desc: "",
             links: "",
           },
@@ -230,36 +379,71 @@
             name: "Camiseta Furia Original",
             price: "",
             note: "",
+            category: "moda",
             desc: "",
             links: "",
           },
-          { name: "Juliet", price: "", note: "", desc: "", links: "" },
-          { name: "Óculos de Sol", price: "", note: "", desc: "", links: "" },
-          { name: "Lego", price: "", note: "", desc: "", links: "" },
-          { name: "Fone Bluetooth", price: "", note: "", desc: "", links: "" },
+          {
+            name: "Juliet",
+            price: "",
+            note: "",
+            category: "moda",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Óculos de Sol",
+            price: "",
+            note: "",
+            category: "moda",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Lego",
+            price: "",
+            note: "",
+            category: "lazer",
+            desc: "",
+            links: "",
+          },
+          {
+            name: "Fone Bluetooth",
+            price: "",
+            note: "",
+            category: "tech",
+            desc: "",
+            links: "",
+          },
         ],
       };
 
-      // Formata preço: "100~300" → "R$ 100 ~ R$ 300", "350" → "R$ 350"
+      let currentTab = "madu";
+      let currentFilter = "all";
+      let currentCategory = "all";
+      let data = { madu: [], gugs: [] };
+      let initialized = { madu: false, gugs: false };
+
+      // ── Preço ──
       function formatPrice(raw) {
-        if (!raw || raw.trim() === "") return "";
+        if (!raw || !raw.trim()) return "";
         const val = raw.trim();
-        const rangeMatch = val.match(/^([\d.,]+)\s*[~\-]\s*([\d.,]+)$/);
-        if (rangeMatch) return `R$ ${rangeMatch[1]} ~ R$ ${rangeMatch[2]}`;
+        const m = val.match(/^([\d.,]+)\s*[~\-]\s*([\d.,]+)$/);
+        if (m) return `R$ ${m[1]} ~ R$ ${m[2]}`;
         if (/^[\d.,]+$/.test(val)) return `R$ ${val}`;
         if (val.toLowerCase().startsWith("r$")) return val;
         return val;
       }
-
       function normalizePrice(raw) {
-        if (!raw) return "";
         return raw
-          .trim()
-          .replace(/^R\$\s*/i, "")
-          .trim();
+          ? raw
+              .trim()
+              .replace(/^R\$\s*/i, "")
+              .trim()
+          : "";
       }
 
-      // Firebase
+      // ── Firebase ──
       function listenTab(tab) {
         onValue(ref(db, `wishlist/${tab}`), (snapshot) => {
           const val = snapshot.val();
@@ -270,24 +454,26 @@
                 ...item,
                 done: false,
                 createdAt: Date.now() + i,
+                order: i,
               };
             });
             set(ref(db, `wishlist/${tab}`), initial);
-            initialized[tab] = true;
-          } else {
-            initialized[tab] = true;
-            data[tab] = val
-              ? Object.entries(val).map(([id, item]) => ({ id, ...item }))
-              : [];
-            data[tab].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-            if (tab === currentTab) render();
           }
+          initialized[tab] = true;
+          data[tab] = val
+            ? Object.entries(val).map(([id, item]) => ({ id, ...item }))
+            : [];
+          data[tab].sort(
+            (a, b) =>
+              (a.order ?? a.createdAt ?? 0) - (b.order ?? b.createdAt ?? 0),
+          );
+          if (tab === currentTab) render();
         });
       }
-
       listenTab("madu");
       listenTab("gugs");
 
+      // ── Toggle done ──
       window.toggleItem = function (id) {
         const item = data[currentTab].find((i) => i.id === id);
         if (!item) return;
@@ -295,14 +481,23 @@
         showPulse();
       };
 
+      // ── Delete — FIX: flag prevents closeModal from autosaving a deleted item ──
+      let isDeleting = false;
       window.deleteItem = function (id) {
         const item = data[currentTab].find((i) => i.id === id);
         if (!item) return;
         if (!confirm(`Remover "${item.name}"?`)) return;
-        remove(ref(db, `wishlist/${currentTab}/${id}`));
-        closeModal();
+        isDeleting = true;
+        editingId = null; // clear before closing
+        _closeModalUI(); // close UI only, no save
+        remove(ref(db, `wishlist/${currentTab}/${id}`)); // then delete
+        isDeleting = false;
+      };
+      window.deleteFromModal = function () {
+        if (editingId) deleteItem(editingId);
       };
 
+      // ── Add ──
       window.addItem = function () {
         const nameEl = document.getElementById("new-name");
         const name = nameEl.value.trim();
@@ -310,26 +505,35 @@
           nameEl.focus();
           return;
         }
+        const cat = document.getElementById("new-category").value;
         const id = `item_${Date.now()}`;
+        const maxOrder = data[currentTab].reduce(
+          (m, i) => Math.max(m, i.order ?? 0),
+          0,
+        );
         set(ref(db, `wishlist/${currentTab}/${id}`), {
           name,
           price: normalizePrice(document.getElementById("new-price").value),
           note: "",
+          category: cat || "outro",
           desc: document.getElementById("new-desc").value.trim(),
           links: document.getElementById("new-links").value.trim(),
           done: false,
           createdAt: Date.now(),
+          order: maxOrder + 1,
         });
         ["new-name", "new-price", "new-desc", "new-links"].forEach(
-          (id) => (document.getElementById(id).value = ""),
+          (i) => (document.getElementById(i).value = ""),
         );
         document.getElementById("add-price-preview").textContent = "";
-        nameEl.focus();
+        document.getElementById("new-category").value = "";
         document.getElementById("add-panel").classList.add("hidden");
+        nameEl.focus();
       };
 
-      // Edit modal
+      // ── Edit modal ──
       let editingId = null;
+      let autosaveTimer = null;
 
       window.openEdit = function (id) {
         const item = data[currentTab].find((i) => i.id === id);
@@ -338,6 +542,7 @@
         document.getElementById("edit-name").value = item.name || "";
         document.getElementById("edit-price").value = item.price || "";
         document.getElementById("edit-note").value = item.note || "";
+        document.getElementById("edit-cat").value = item.category || "";
         document.getElementById("edit-desc").value = item.desc || "";
         document.getElementById("edit-links").value = item.links || "";
         document.getElementById("edit-price-preview").textContent = "";
@@ -356,20 +561,19 @@
         document.getElementById("edit-name").focus();
       };
 
-      // Autosave: persists current modal fields without closing
       function persistEdit() {
-        if (!editingId) return;
+        if (!editingId || isDeleting) return;
         const name = document.getElementById("edit-name").value.trim();
-        if (!name) return; // silently skip if name empty
+        if (!name) return;
         update(ref(db, `wishlist/${currentTab}/${editingId}`), {
           name,
           price: normalizePrice(document.getElementById("edit-price").value),
           note: document.getElementById("edit-note").value.trim(),
+          category: document.getElementById("edit-cat").value || "outro",
           desc: document.getElementById("edit-desc").value.trim(),
           links: document.getElementById("edit-links").value.trim(),
         });
         showPulse();
-        // Show autosave badge briefly
         const badge = document.getElementById("autosave-badge");
         if (badge) {
           badge.classList.add("show");
@@ -377,8 +581,6 @@
         }
       }
 
-      // Debounced autosave while typing
-      let autosaveTimer = null;
       window.scheduleAutosave = function () {
         clearTimeout(autosaveTimer);
         autosaveTimer = setTimeout(persistEdit, 900);
@@ -390,25 +592,31 @@
         closeModal();
       };
 
-      window.deleteFromModal = function () {
-        if (editingId) deleteItem(editingId);
-      };
+      // UI-only close (no save) — used internally by deleteItem
+      function _closeModalUI() {
+        clearTimeout(autosaveTimer);
+        document.activeElement && document.activeElement.blur();
+        const modal = document.getElementById("edit-modal");
+        if (!modal) return;
+        modal.querySelector(".modal-box").classList.remove("in");
+        setTimeout(() => modal.classList.add("hidden"), 220);
+      }
 
       window.closeModal = function () {
-        // Autosave on close (covers ✕ button, backdrop tap, swipe-down)
         clearTimeout(autosaveTimer);
-        persistEdit();
-        // Dismiss keyboard on mobile
+        if (!isDeleting) persistEdit(); // autosave only if NOT deleting
+        editingId = null;
         document.activeElement && document.activeElement.blur();
         const modal = document.getElementById("edit-modal");
         modal.querySelector(".modal-box").classList.remove("in");
         setTimeout(() => modal.classList.add("hidden"), 220);
-        editingId = null;
       };
 
+      // ── Tab / filter / category ──
       window.switchTab = function (tab) {
         currentTab = tab;
         currentFilter = "all";
+        currentCategory = "all";
         document.getElementById("tab-madu").className =
           "tab-btn" + (tab === "madu" ? " active-madu" : "");
         document.getElementById("tab-gugs").className =
@@ -427,6 +635,11 @@
         if (doRender) render();
       };
 
+      window.setCategoryFilter = function (cat) {
+        currentCategory = cat;
+        render();
+      };
+
       window.toggleAddPanel = function () {
         const p = document.getElementById("add-panel");
         p.classList.toggle("hidden");
@@ -438,8 +651,9 @@
       };
 
       window.previewPrice = function (inputId, previewId) {
-        const val = document.getElementById(inputId).value;
-        const formatted = formatPrice(normalizePrice(val));
+        const formatted = formatPrice(
+          normalizePrice(document.getElementById(inputId).value),
+        );
         document.getElementById(previewId).textContent = formatted
           ? `→ ${formatted}`
           : "";
@@ -451,6 +665,119 @@
         setTimeout(() => dot.classList.remove("pulse"), 800);
       }
 
+      // ── Drag-to-reorder (mouse + touch) ──
+      let dragSrc = null;
+      let dragSrcId = null;
+      let touchDragEl = null;
+      let touchClone = null;
+      let touchStartY2 = 0;
+
+      window.onDragStart = function (e, id) {
+        dragSrcId = id;
+        dragSrc = e.currentTarget;
+        e.dataTransfer.effectAllowed = "move";
+        setTimeout(() => dragSrc && dragSrc.classList.add("dragging"), 0);
+      };
+      window.onDragEnd = function (e) {
+        document
+          .querySelectorAll(".wish-item")
+          .forEach((el) => el.classList.remove("drag-over", "dragging"));
+      };
+      window.onDragOver = function (e) {
+        e.preventDefault();
+        e.currentTarget.classList.add("drag-over");
+      };
+      window.onDragLeave = function (e) {
+        e.currentTarget.classList.remove("drag-over");
+      };
+      window.onDrop = function (e, targetId) {
+        e.preventDefault();
+        e.currentTarget.classList.remove("drag-over");
+        if (!dragSrcId || dragSrcId === targetId) return;
+        reorderItems(dragSrcId, targetId);
+        dragSrcId = null;
+      };
+
+      function reorderItems(srcId, targetId) {
+        const items = [...data[currentTab]];
+        const srcIdx = items.findIndex((i) => i.id === srcId);
+        const tgtIdx = items.findIndex((i) => i.id === targetId);
+        if (srcIdx < 0 || tgtIdx < 0) return;
+        const [moved] = items.splice(srcIdx, 1);
+        items.splice(tgtIdx, 0, moved);
+        // Write new order values to Firebase
+        const updates = {};
+        items.forEach((item, i) => {
+          updates[`wishlist/${currentTab}/${item.id}/order`] = i;
+        });
+        update(ref(db), updates);
+      }
+
+      // Touch drag support
+      window.onTouchDragStart = function (e, id) {
+        if (e.touches.length !== 1) return;
+        dragSrcId = id;
+        touchStartY2 = e.touches[0].clientY;
+        touchDragEl = e.currentTarget.closest("li");
+
+        // Create visual clone
+        touchClone = touchDragEl.cloneNode(true);
+        touchClone.style.cssText = `position:fixed;left:${touchDragEl.getBoundingClientRect().left}px;top:${touchDragEl.getBoundingClientRect().top}px;width:${touchDragEl.offsetWidth}px;opacity:.85;pointer-events:none;z-index:999;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18);transform:scale(1.02);transition:none;`;
+        document.body.appendChild(touchClone);
+        touchDragEl.style.opacity = "0.3";
+      };
+
+      document.addEventListener(
+        "touchmove",
+        (e) => {
+          if (!touchClone || !dragSrcId) return;
+          e.preventDefault();
+          const t = e.touches[0];
+          touchClone.style.top = t.clientY - 30 + "px";
+
+          // Find element under touch
+          touchClone.style.display = "none";
+          const el = document.elementFromPoint(t.clientX, t.clientY);
+          touchClone.style.display = "";
+          const li = el && el.closest("li.wish-item");
+          document
+            .querySelectorAll(".wish-item")
+            .forEach((x) => x.classList.remove("drag-over"));
+          if (li && li !== touchDragEl) li.classList.add("drag-over");
+        },
+        { passive: false },
+      );
+
+      document.addEventListener(
+        "touchend",
+        (e) => {
+          if (!touchClone || !dragSrcId) return;
+          const t = e.changedTouches[0];
+          touchClone.remove();
+          touchClone = null;
+          if (touchDragEl) {
+            touchDragEl.style.opacity = "";
+            touchDragEl = null;
+          }
+
+          touchClone = null;
+          const el = document.elementFromPoint(t.clientX, t.clientY);
+          const li = el && el.closest("li.wish-item");
+          document
+            .querySelectorAll(".wish-item")
+            .forEach((x) => x.classList.remove("drag-over"));
+
+          if (li) {
+            const targetId = li.dataset.id;
+            if (targetId && targetId !== dragSrcId)
+              reorderItems(dragSrcId, targetId);
+          }
+          dragSrcId = null;
+        },
+        { passive: true },
+      );
+
+      // ── Render ──
       function render() {
         const items = data[currentTab] || [];
         const total = items.length;
@@ -464,16 +791,19 @@
         document.getElementById("pct-label").textContent = pct + "%";
         document.getElementById("fab").className = "fab fab-" + currentTab;
 
-        let filtered =
-          currentFilter === "pending"
-            ? items.filter((i) => !i.done)
-            : currentFilter === "done"
-              ? items.filter((i) => i.done)
-              : items;
+        // Category pills
+        renderCategoryPills(items);
+
+        // Apply filters
+        let filtered = items;
+        if (currentFilter === "pending")
+          filtered = filtered.filter((i) => !i.done);
+        if (currentFilter === "done") filtered = filtered.filter((i) => i.done);
+        if (currentCategory !== "all")
+          filtered = filtered.filter((i) => i.category === currentCategory);
 
         const list = document.getElementById("wish-list");
         const emptyEl = document.getElementById("empty-state");
-
         if (filtered.length === 0) {
           list.innerHTML = "";
           emptyEl.classList.remove("hidden");
@@ -491,29 +821,40 @@
             const noteTag = item.note
               ? `<span class="item-note">${item.note}</span>`
               : "";
+            const cat = CATEGORIES.find((c) => c.id === item.category);
+            const catTag = cat
+              ? `<span class="item-cat">${cat.emoji} ${cat.label}</span>`
+              : "";
             const descTag = item.desc
               ? `<div class="item-desc">${item.desc}</div>`
               : "";
             let linksHtml = "";
             if (item.links) {
-              const linkList = item.links
+              const ll = item.links
                 .split(/[\n,]+/)
                 .map((l) => l.trim())
                 .filter(Boolean);
-              linksHtml = `<div class="item-links">${linkList
+              linksHtml = `<div class="item-links">${ll
                 .map((l, i) => {
                   const href = l.startsWith("http") ? l : "https://" + l;
-                  return `<a href="${href}" target="_blank" rel="noopener" class="item-link link-${currentTab}">🔗 Link${linkList.length > 1 ? " " + (i + 1) : ""}</a>`;
+                  return `<a href="${href}" target="_blank" rel="noopener" class="item-link link-${currentTab}">🔗 Link${ll.length > 1 ? " " + (i + 1) : ""}</a>`;
                 })
                 .join("")}</div>`;
             }
-            return `<li class="wish-item${item.done ? " done" : ""}" id="li-${item.id}">
+            return `<li class="wish-item${item.done ? " done" : ""}" id="li-${item.id}" data-id="${item.id}"
+        draggable="true"
+        ondragstart="onDragStart(event,'${item.id}')"
+        ondragend="onDragEnd(event)"
+        ondragover="onDragOver(event)"
+        ondragleave="onDragLeave(event)"
+        ondrop="onDrop(event,'${item.id}')">
+        <div class="drag-grip" ontouchstart="onTouchDragStart(event,'${item.id}')" title="Arrastar">⠿</div>
         <div class="wish-check ${checkClass}" onclick="toggleItem('${item.id}')">
           <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <div class="item-body" onclick="openEdit('${item.id}')">
           <div class="item-name">${item.name}</div>
-          <div class="item-meta">${priceTag}${noteTag}</div>
+          <div class="item-meta">${priceTag}${noteTag}${catTag}</div>
           ${descTag}${linksHtml}
         </div>
         <button class="edit-btn" onclick="openEdit('${item.id}')" title="Editar">✏️</button>
@@ -522,25 +863,49 @@
           .join("");
       }
 
-      window.addEventListener("DOMContentLoaded", render);
+      function renderCategoryPills(items) {
+        const usedCats = [
+          ...new Set(items.map((i) => i.category).filter(Boolean)),
+        ];
+        const container = document.getElementById("cat-pills");
+        if (!container) return;
+        const accent = currentTab === "madu" ? "madu" : "gugs";
+        container.innerHTML = `
+      <button class="cat-pill ${currentCategory === "all" ? "active-" + accent : ""}" onclick="setCategoryFilter('all')">Todos</button>
+      ${CATEGORIES.filter((c) => usedCats.includes(c.id))
+        .map(
+          (c) => `
+        <button class="cat-pill ${currentCategory === c.id ? "active-" + accent : ""}" onclick="setCategoryFilter('${c.id}')">${c.emoji} ${c.label}</button>
+      `,
+        )
+        .join("")}
+    `;
+      }
 
-      // Close modal on backdrop click (also dismisses keyboard)
+      window.addEventListener("DOMContentLoaded", () => {
+        // Populate category selects
+        const catOptions = CATEGORIES.map(
+          (c) => `<option value="${c.id}">${c.emoji} ${c.label}</option>`,
+        ).join("");
+        document.getElementById("new-category").innerHTML =
+          `<option value="">Categoria (opcional)</option>` + catOptions;
+        document.getElementById("edit-cat").innerHTML =
+          `<option value="">Sem categoria</option>` + catOptions;
+        render();
+      });
+
       window.addEventListener("click", (e) => {
         if (e.target.id === "edit-modal") closeModal();
       });
 
-      // Dismiss keyboard when tapping outside any input (but not on inputs themselves)
       document.addEventListener(
         "touchstart",
         (e) => {
           const tag = e.target.tagName;
-          const isInput =
-            tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON";
           if (
-            !isInput &&
+            !["INPUT", "TEXTAREA", "BUTTON", "SELECT"].includes(tag) &&
             document.activeElement &&
-            (document.activeElement.tagName === "INPUT" ||
-              document.activeElement.tagName === "TEXTAREA")
+            ["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
           ) {
             document.activeElement.blur();
           }
@@ -548,25 +913,23 @@
         { passive: true },
       );
 
-      // Keyboard shortcuts
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeModal();
         if (
           e.key === "Enter" &&
           !document.getElementById("edit-modal").classList.contains("hidden") &&
           document.activeElement.tagName !== "TEXTAREA"
-        ) {
+        )
           saveEdit();
-        }
       });
 
-      // Swipe down to close modal on mobile
-      let touchStartY = 0;
+      let touchStartYModal = 0;
       document.addEventListener(
         "touchstart",
         (e) => {
           const box = document.querySelector(".modal-box");
-          if (box && box.contains(e.target)) touchStartY = e.touches[0].clientY;
+          if (box && box.contains(e.target))
+            touchStartYModal = e.touches[0].clientY;
         },
         { passive: true },
       );
@@ -575,8 +938,7 @@
         (e) => {
           const box = document.querySelector(".modal-box");
           if (!box || !box.classList.contains("in")) return;
-          const delta = e.changedTouches[0].clientY - touchStartY;
-          if (delta > 80) closeModal(); // swipe down 80px closes
+          if (e.changedTouches[0].clientY - touchStartYModal > 80) closeModal();
         },
         { passive: true },
       );
@@ -604,10 +966,10 @@
         background: var(--bg);
         color: var(--text);
         min-height: 100vh;
-        padding-bottom: 100px;
+        padding-bottom: 110px;
       }
 
-      /* HERO */
+      /* ── HERO ── */
       .hero {
         background: linear-gradient(135deg, #f7e8e8 0%, #e8f0f7 100%);
         padding: 32px 20px 24px;
@@ -650,7 +1012,7 @@
         font-size: 13px;
       }
 
-      /* TABS */
+      /* ── TABS ── */
       .tabs {
         display: flex;
         max-width: 500px;
@@ -684,14 +1046,14 @@
         box-shadow: 0 3px 10px rgba(74, 125, 160, 0.3);
       }
 
-      /* CONTENT */
+      /* ── CONTENT ── */
       .content {
         max-width: 560px;
         margin: 0 auto;
         padding: 20px 16px;
       }
 
-      /* STATS */
+      /* ── STATS ── */
       .stats {
         display: flex;
         align-items: center;
@@ -744,11 +1106,11 @@
         text-align: right;
       }
 
-      /* FILTER */
+      /* ── FILTERS ── */
       .filter-row {
         display: flex;
         gap: 6px;
-        margin-bottom: 14px;
+        margin-bottom: 10px;
       }
       .filter-btn {
         padding: 6px 12px;
@@ -772,7 +1134,45 @@
         background: var(--blue-dark);
       }
 
-      /* ADD PANEL */
+      /* ── CATEGORY PILLS ── */
+      .cat-row {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 14px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+      }
+      .cat-row::-webkit-scrollbar {
+        display: none;
+      }
+      .cat-pill {
+        padding: 5px 11px;
+        border-radius: 20px;
+        border: 1.5px solid var(--border);
+        background: white;
+        font-size: 12px;
+        font-family: "DM Sans", sans-serif;
+        cursor: pointer;
+        color: var(--muted);
+        transition: all 0.2s;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .cat-pill.active-madu {
+        background: #fae8e8;
+        border-color: var(--rose-dark);
+        color: var(--rose-dark);
+        font-weight: 500;
+      }
+      .cat-pill.active-gugs {
+        background: #e4eef5;
+        border-color: var(--blue-dark);
+        color: var(--blue-dark);
+        font-weight: 500;
+      }
+
+      /* ── ADD PANEL ── */
       .add-panel {
         background: white;
         border: 1.5px solid var(--border);
@@ -827,6 +1227,23 @@
       .add-input:focus {
         border-color: var(--rose-dark);
       }
+      .add-select {
+        flex: 1;
+        padding: 10px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        background: var(--bg);
+        color: var(--text);
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      .add-select:focus {
+        border-color: var(--rose-dark);
+      }
       .price-preview {
         font-size: 11px;
         color: var(--muted);
@@ -854,7 +1271,7 @@
         transform: scale(0.95);
       }
 
-      /* LIST */
+      /* ── LIST ── */
       .wish-list {
         list-style: none;
         display: flex;
@@ -864,13 +1281,17 @@
       .wish-item {
         display: flex;
         align-items: flex-start;
-        gap: 12px;
-        padding: 13px 14px;
+        gap: 10px;
+        padding: 12px 12px 12px 8px;
         background: var(--card);
         border-radius: 12px;
         border: 1.5px solid var(--border);
-        transition: all 0.2s;
+        transition:
+          box-shadow 0.2s,
+          transform 0.2s,
+          opacity 0.2s;
         animation: slideIn 0.25s ease;
+        cursor: default;
       }
       .wish-item:hover {
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
@@ -878,11 +1299,18 @@
       }
       .wish-item.done {
         background: #f9f2f2;
-        opacity: 0.65;
+        opacity: 0.6;
       }
       .wish-item.done .item-name {
         text-decoration: line-through;
         color: var(--muted);
+      }
+      .wish-item.dragging {
+        opacity: 0.3;
+      }
+      .wish-item.drag-over {
+        border-color: var(--rose-dark);
+        box-shadow: 0 0 0 2px var(--rose);
       }
       @keyframes slideIn {
         from {
@@ -893,6 +1321,25 @@
           opacity: 1;
           transform: translateY(0);
         }
+      }
+
+      /* drag grip */
+      .drag-grip {
+        font-size: 16px;
+        color: var(--border);
+        cursor: grab;
+        flex-shrink: 0;
+        padding: 2px 2px;
+        line-height: 1;
+        user-select: none;
+        margin-top: 3px;
+        touch-action: none;
+      }
+      .drag-grip:hover {
+        color: var(--muted);
+      }
+      .drag-grip:active {
+        cursor: grabbing;
       }
 
       .wish-check {
@@ -961,6 +1408,14 @@
         color: var(--muted);
         font-style: italic;
       }
+      .item-cat {
+        font-size: 11px;
+        color: var(--muted);
+        background: var(--bg);
+        border: 1px solid var(--border);
+        padding: 1px 7px;
+        border-radius: 20px;
+      }
       .item-desc {
         font-size: 12px;
         color: #6a5c5c;
@@ -1000,15 +1455,15 @@
         color: #ccc;
         padding: 3px 6px;
         border-radius: 6px;
-        transition: opacity 0.2s;
         flex-shrink: 0;
         opacity: 0;
+        transition: opacity 0.2s;
       }
       .wish-item:hover .edit-btn {
         opacity: 1;
       }
 
-      /* FAB */
+      /* ── FAB ── */
       .fab {
         position: fixed;
         bottom: 24px;
@@ -1038,7 +1493,7 @@
         color: white;
       }
 
-      /* EMPTY */
+      /* ── EMPTY ── */
       .empty {
         text-align: center;
         padding: 40px 20px;
@@ -1051,7 +1506,7 @@
         margin-bottom: 10px;
       }
 
-      /* MODAL */
+      /* ── MODAL ── */
       .modal-overlay {
         position: fixed;
         inset: 0;
@@ -1092,8 +1547,6 @@
         transform: translateY(0);
         opacity: 1;
       }
-
-      /* drag handle (mobile only) */
       .drag-handle {
         width: 36px;
         height: 4px;
@@ -1106,7 +1559,6 @@
           display: none;
         }
       }
-
       .modal-header {
         display: flex;
         align-items: center;
@@ -1157,6 +1609,22 @@
       .modal-input:focus {
         border-color: var(--rose-dark);
       }
+      .modal-select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        background: var(--bg);
+        color: var(--text);
+        outline: none;
+        appearance: none;
+        cursor: pointer;
+      }
+      .modal-select:focus {
+        border-color: var(--rose-dark);
+      }
       .modal-price-preview {
         font-size: 11px;
         color: var(--muted);
@@ -1164,8 +1632,6 @@
         min-height: 14px;
         font-style: italic;
       }
-
-      /* autosave indicator */
       .autosave-badge {
         display: inline-flex;
         align-items: center;
@@ -1179,7 +1645,6 @@
       .autosave-badge.show {
         opacity: 1;
       }
-
       .modal-actions {
         display: flex;
         gap: 8px;
@@ -1211,6 +1676,7 @@
         font-size: 14px;
         cursor: pointer;
         color: var(--rose-dark);
+        transition: background 0.2s;
       }
       .del-modal-btn:hover {
         background: #fae8e8;
@@ -1287,6 +1753,9 @@
         </button>
       </div>
 
+      <div class="cat-row" id="cat-pills"></div>
+
+      <!-- ADD PANEL -->
       <div class="add-panel hidden" id="add-panel">
         <h3>✨ Novo desejo</h3>
         <div class="add-row">
@@ -1309,6 +1778,9 @@
           />
         </div>
         <div class="price-preview" id="add-price-preview"></div>
+        <div class="add-row">
+          <select class="add-select add-input" id="new-category"></select>
+        </div>
         <div class="add-row">
           <textarea
             class="add-input"
@@ -1342,7 +1814,7 @@
         <div class="drag-handle"></div>
         <div class="modal-header">
           <span class="modal-title"
-            >Editar desejo ✏️
+            >Editar ✏️
             <span class="autosave-badge" id="autosave-badge"
               >✓ salvo</span
             ></span
@@ -1370,6 +1842,14 @@
             "
           />
           <div class="modal-price-preview" id="edit-price-preview"></div>
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">Categoria</div>
+          <select
+            class="modal-select"
+            id="edit-cat"
+            onchange="scheduleAutosave()"
+          ></select>
         </div>
         <div class="modal-field">
           <div class="modal-label">Observação rápida</div>
