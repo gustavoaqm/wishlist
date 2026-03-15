@@ -9,4 +9,4 @@ Uma listinha de desejos compartilhada, feita com carinho, para guardar tudo que 
 <!-- Se quiser adicionar uma foto, substitua o comentário abaixo pela linha de imagem -->
 <!-- ![nossa foto](./foto.jpg) -->
 
-**Feito com** Firebase · GitHub Pages · muito amor 🌸⚡
+**Feito com** Firebase · GitHub Pages · e muito amor! 🌸⚡
